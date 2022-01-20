@@ -1,21 +1,27 @@
 import 'package:flutter_mvvm_app/app/data/model/dummy_person_datas.dart';
-import 'package:flutter_mvvm_app/app/data/model/person.dart';
-import 'package:flutter_mvvm_app/app/data/viewModel/person_viewModel.dart';
+import 'package:flutter_mvvm_app/app/data/model/person_model.dart';
+import 'package:flutter_mvvm_app/app/data/repository/home_repository.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  RxList<PersonViewModel> personList = <PersonViewModel>[].obs;
+  RxList<PersonModel> personList = <PersonModel>[].obs;
+
+  // API
+  Rx<PersonModel> person = PersonModel().obs;
+  late IHomeRepository repository;
 
   @override
   void onInit() {
     super.onInit();
+    repository = HomeRepository();
     fetchGetDummy();
   }
 
-  Future<void> fetchGetDummy() async {
-    final dummyList = DummyData.dummyList;
-    personList(dummyList
-        .map((value) => PersonViewModel(person: Person.fromJson(value)))
-        .toList());
+  fetchGetDummy() async {
+    repository.getPersonList().then((value) => personList(value));
+  }
+
+  getPerson() async {
+    repository.getPerson().then((value) => person(value));
   }
 }
